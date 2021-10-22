@@ -8,19 +8,32 @@
 }
 body {
    font-family: 'Scheherazade New',serif;
+   /*color: ;*/
 }
 .container {
    padding: 0 40px;
    margin: 0 auto;
 }
 .header {
-   background: #22254b;
+   /*background: #22254b;*/
+   background: url(img/header-bg.jpg) center top  no-repeat;
+   background-size: 100% 100%;
    padding: 20px 0;
 }
 .header-wrapper {
    display: flex;
    justify-content: space-around;
 }
+.header-navigation {
+
+}
+.header-navigation__wrapper {
+
+}
+.header-item {
+   
+}
+
 .movie-fluid {
    display: flex;
    justify-content: space-around;
@@ -32,6 +45,9 @@ body {
    flex: 0 1 300px;
    margin: 30px 15px 0;
    overflow: hidden;
+   display: flex;
+   flex-direction: column;
+   cursor: pointer
 }
 .movie img {
    width: 100%;
