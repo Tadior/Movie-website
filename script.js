@@ -60,7 +60,8 @@ async function main() {
    for (let i = 0; i < data.length; i++) {
       showMovie(data);
    }
-   
+   //pagination(urlApi);
+   //pagin();
 }
 
 main();
@@ -77,13 +78,7 @@ async function searchMovie(event) {
       movieName += inputValue[i];
    }
 
-   async function search() {
-      const response = await fetch(`${searchUrl}&query=${movieName}`);
-      const data = await response.json();
-      return data.results;
-   }
-
-   const searchMovie = await search();
+   const searchMovie = await getMovies(`${searchUrl}&query=${movieName}`);
    let showMovie = showMovies(searchMovie);
 
    clearMovies();
@@ -126,12 +121,8 @@ async function showGenre(url) {
          const id = element.getAttribute('data-genre');
          searchString +=`&with_genres=${id}`;
       });
-      async function getMovie(url) {
-         const response = await fetch(url);
-         const data = await response.json();
-         return data.results;
-      }
-      const data = await getMovie(genreUrl + searchString);
+
+      const data = await getMovies(genreUrl + searchString);
       clearMovies();
       const showMoviesFunc = showMovies(data);
       for (let i = 0; i < data.length; i++) {
@@ -157,27 +148,56 @@ const currentPage = document.querySelector('.page--current');
 prevPage.addEventListener('click', pagination);
 nextPage.addEventListener('click', pagination);
 
-async function pagination() {
-   if(currentPage.textContent === '1' && this.classList.contains('page--previous')) {
+async function pagination(param = ' ') {
+
+   const item = prevPage;
+   let checker;
+   if (item.classList.contains('.disable')) {
+      item.classList.remove('disable');
+      checker =  false;
+   } else {
+      item.classList.add('disable');
+      checker =  true;
+   }
+   console.log(param)
+
+   if(currentPage.textContent === '1' && checker === true) {
+      console.log('dfdfd')
       return false;
    }
-   let pageCounter = +currentPage.textContent
-   if (this.classList.contains('page--previous')) {
+   let pageCounter = +currentPage.textContent;
+   if (event.target.classList.contains('page--previous')) {
       pageCounter = pageCounter - 1;
    } else {
       pageCounter = pageCounter + 1;
    }
-   async function getData(url) {
-      const response = await fetch(url);
-      const data = await response.json();
-      return data.results;
+   if (param != ' ') {
+      const data = await getMovies(param);
+      clearMovies();
+      const showMovie = showMovies(data);
+      for (let i = 0; i < data.length; i++) {
+         showMovie();
+      }
+      currentPage.textContent = pageCounter;
+   } else {
+      const data = await getMovies(urlApi + `&page=${pageCounter}`);
+      clearMovies();
+      const showMovie = showMovies(data);
+      for (let i = 0; i < data.length; i++) {
+         showMovie();
+      }
+      currentPage.textContent = pageCounter;
    }
-   const data = await getData(urlApi + `&page=${pageCounter}`)
-   clearMovies();
-   const showMovie = showMovies(data);
-   for (let i = 0; i < data.length; i++) {
-      showMovie();
-   }
-   currentPage.textContent = pageCounter;
+   
 }
+
+//function switchDisable(elementByClass) {
+//   const item = document.querySelector(`.${elementByClass}`);
+//   if (item.classList.contains('.disable')) {
+//      item.classList.remove('disable');
+//      return false;
+//   }  
+//   item.classList.add('disable');
+//   return true;
+//}
 
