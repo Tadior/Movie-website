@@ -20,8 +20,8 @@ async function getMovies(url) { // Запрос к серверу с получ�
    lastUrl = url;
    const response = await fetch(url);
    const data = await response.json();
-   console.log(data)
    if (data.results.length !== 0) {
+      clearMovies();
       const showFilms = showMovies();
       showFilms(data.results);
       currentPage = data.page;
@@ -85,7 +85,6 @@ function showMovies(info) { // Добавление элемента на стр
 
 // searching by title
 async function searchMovie(event) {
-
    const inputValue = document.querySelector('.search__input').value;
    let movieName = '';
    for (let i = 0; i < inputValue.length; i++) {
@@ -95,16 +94,8 @@ async function searchMovie(event) {
       }
       movieName += inputValue[i];
    }
-   const url = `${searchUrl}&query=${movieName}`;
-
-   const searchMovie = await getMovies(url);
-   let showMovie = showMovies(searchMovie);
-
-   clearMovies();
-   for (let i = 0; i < searchMovie.length; i++) {
-      showMovie();
-   }
-   updatePagination(url);
+   lastUrl = `${searchUrl}&query=${movieName}`
+   await getMovies(lastUrl);
 }
 // clear document of all movie
 function clearMovies() {
@@ -117,6 +108,7 @@ document.querySelector('.search').addEventListener('submit', function (event) {
    event.preventDefault();
    searchMovie();
 });
+
 // Search by genres
 async function showGenre(url) {
    async function getGenres(url) {
@@ -133,7 +125,6 @@ async function showGenre(url) {
    }
 
    const allGenres = document.querySelectorAll('.genre');
-
    async function searchByGenres() {
       let searchString = '';
       const genresActive = document.querySelectorAll('.genre--active');
@@ -141,14 +132,13 @@ async function showGenre(url) {
          const id = element.getAttribute('data-genre');
          searchString +=`&with_genres=${id}`;
       });
-
-      const data = await getMovies(genreUrl + searchString);
-      clearMovies();
-      const showMoviesFunc = showMovies(data);
-      for (let i = 0; i < data.length; i++) {
-         showMoviesFunc();
+      const findFlag = lastUrl.search(/&with/);
+      if (findFlag >= 0) {
+         lastUrl = lastUrl.substr(0,findFlag)
+      } else {
+         lastUrl = lastUrl + searchString;
       }
-
+      await getMovies(lastUrl);
    }
 
    allGenres.forEach(element => {
@@ -160,13 +150,6 @@ async function showGenre(url) {
 }
 
 showGenre(genreApi);
-
-
-//const prevPage = document.querySelector('.page--previous');
-//const nextPage = document.querySelector('.page--next');
-//const currentPage = document.querySelector('.page--current');
-//prevPage.addEventListener('click', addPagination);
-//nextPage.addEventListener('click', addPagination);
 
 async function addPagination() {
    if(currentPage.textContent === '1' && this.classList.contains('page--previous')) {
@@ -198,14 +181,11 @@ async function updatePagination(url) {
    const totalPages = await data.total_pages;
    let currentPage = data.page;
    const movies = await getMovies(`${url}&page=${currentPage}`);
-   console.log(movies);
    currentPage++;
    nextPage.addEventListener('click', function() {
       clearMovies();
       let showMovie = showMovies(movies);
-      //showMovie(movies)
       for (let i = 0; i < movies.length; i++) {
-         //console.log()
          showMovie(movies);
       }
    })
@@ -232,13 +212,9 @@ function pageCall(page) {
    let urlSplit = lastUrl.split('?');
    let queryParams = urlSplit[1].split('&');
    let key = queryParams[queryParams.length - 1].split('=');
-   console.log(urlSplit)
-   console.log(queryParams)
-   console.log(key)
    if (key[0] != 'page') {
       let url = lastUrl + "&page=" + page;
-      console.log(lastUrl)
-      getMovies(url)
+      getMovies(url);
    } else {
       key[1] = page.toString();
       let a = key.join('=');
