@@ -6,14 +6,18 @@ let currentLanguage = 'ru-RU';
 const urlApi = baseUrl + '/discover/movie?sort_by-popularity.desc&' + apiKey + `&language=${currentLanguage}`;
 const searchUrl = baseUrl + '/search/movie?' + apiKey + `&language=${currentLanguage}`;
 const genreApi = baseUrl + '/genre/movie/list?' + apiKey + `&language=${currentLanguage}`;
-const genreUrl = baseUrl + '/discover/movie?' + apiKey + `&language=${currentLanguage}` + '&with_genres=18&with_genres=14';
+const genreUrl = baseUrl + '/discover/movie?' + apiKey + 
+               `&language=${currentLanguage}` + '&with_genres=18&with_genres=14';
 const searchButton = document.querySelector('label');
-const genres = document.querySelector('.genres')
+const genres = document.querySelector('.genres');
+const logo = document.querySelector('.header-warpper__item-logo');
 let lastUrl = '';
 let currentPage = 1;
 let nextPage = 2;
 let prevPage = 0;
 let totalPages = 100;
+
+logo.addEventListener('click', () => getMovies(urlApi));
 
 
 async function getMovies(url) { // Запрос к серверу с получением фильмов
@@ -40,10 +44,10 @@ async function getMovies(url) { // Запрос к серверу с получ�
          prev.classList.remove('disable');
          next.classList.remove('disable');
       }
-      genres.scrollIntoView({behavior: 'smooth'})
+      genres.scrollIntoView({behavior: 'smooth'});
    }
 }
-getMovies(urlApi)
+getMovies(urlApi);
 
 // Callback function которая создает и добавляет новые элементы с фильмами на страницу
 function showMovies(info) { // Добавление элемента на страницу
@@ -86,6 +90,10 @@ function showMovies(info) { // Добавление элемента на стр
 // searching by title
 async function searchMovie(event) {
    const inputValue = document.querySelector('.search__input').value;
+   if (inputValue.length === 0) {
+      alert('Введите название фильма');
+      return false;
+   }
    let movieName = '';
    for (let i = 0; i < inputValue.length; i++) {
       if (inputValue[i] == ' ') {
@@ -94,7 +102,7 @@ async function searchMovie(event) {
       }
       movieName += inputValue[i];
    }
-   lastUrl = `${searchUrl}&query=${movieName}`
+   lastUrl = `${searchUrl}&query=${movieName}`;
    await getMovies(lastUrl);
 }
 // clear document of all movie
@@ -108,7 +116,6 @@ document.querySelector('.search').addEventListener('submit', function (event) {
    event.preventDefault();
    searchMovie();
 });
-
 // Search by genres
 async function showGenre(url) {
    async function getGenres(url) {
@@ -125,6 +132,7 @@ async function showGenre(url) {
    }
 
    const allGenres = document.querySelectorAll('.genre');
+
    async function searchByGenres() {
       let searchString = '';
       const genresActive = document.querySelectorAll('.genre--active');
@@ -134,7 +142,7 @@ async function showGenre(url) {
       });
       const findFlag = lastUrl.search(/&with/);
       if (findFlag >= 0) {
-         lastUrl = lastUrl.substr(0,findFlag)
+         lastUrl = lastUrl.substr(0,findFlag);
       } else {
          lastUrl = lastUrl + searchString;
       }
@@ -151,46 +159,6 @@ async function showGenre(url) {
 
 showGenre(genreApi);
 
-async function addPagination() {
-   if(currentPage.textContent === '1' && this.classList.contains('page--previous')) {
-      return false;
-   }
-   let pageCounter = +currentPage.textContent
-   if (this.classList.contains('page--previous')) {
-      pageCounter = pageCounter - 1;
-   } else {
-      pageCounter = pageCounter + 1;
-   }
-   async function getData(url) {
-      const response = await fetch(url);
-      const data = await response.json();
-      return data.results;
-   }
-   const data = await getData(urlApi + `&page=${pageCounter}`)
-   clearMovies();
-   const showMovie = showMovies(data);
-   for (let i = 0; i < data.length; i++) {
-      showMovie();
-   }
-   currentPage.textContent = pageCounter;
-}
-
-async function updatePagination(url) {
-   const request = await fetch(url);
-   const data = await request.json();
-   const totalPages = await data.total_pages;
-   let currentPage = data.page;
-   const movies = await getMovies(`${url}&page=${currentPage}`);
-   currentPage++;
-   nextPage.addEventListener('click', function() {
-      clearMovies();
-      let showMovie = showMovies(movies);
-      for (let i = 0; i < movies.length; i++) {
-         showMovie(movies);
-      }
-   })
-}
-
 const prev = document.querySelector('#prev');
 const next = document.querySelector('#next');
 const current = document.querySelector('#current');
@@ -199,13 +167,13 @@ prev.addEventListener('click', () => {
    if (prevPage > 0) {
       pageCall(prevPage);
    }
-})
+});
 
 next.addEventListener('click', () => {
    if (nextPage <= totalPages) {
       pageCall(nextPage);
    }
-})
+});
 
 function pageCall(page) {
    clearMovies();

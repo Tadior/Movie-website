@@ -15,14 +15,44 @@ body {
    margin: 0 auto;
 }
 .header {
-   /*background: #22254b;*/
-   background: url(img/header-bg.jpg) center top  no-repeat;
-   background-size: 100% 100%;
+   background: #0F4FA8;
    padding: 20px 0;
 }
 .header-wrapper {
    display: flex;
    justify-content: space-around;
+   color: #fff;
+   font-weight: normal;
+}
+.header-warpper__item-logo {
+   font-size: 25px;
+   cursor:pointer;
+   font-weight: bold;
+}
+.search {
+   /*display: flex;*/
+   /*justify-content: center;*/
+   /*align-items: center;*/
+   /*flex-direction: column;*/
+}
+.search__input {
+   border-radius: 5px;
+   padding: 5px 3px;
+   outline-color: green;
+}
+.search__button {
+   flex: 90px 1 1;
+   margin-left: 5px;
+   padding: 0px 20px;
+   background: orange;
+   border-radius: 5px;
+   cursor: pointer;
+   color: #0F4FA8;
+   font-weight: 400;
+   transition: all ease-out 0.5s;
+}
+.search__button:hover {
+   background: rgb(189, 123, 0);
 }
 /*.header-navigation {
 
@@ -49,6 +79,9 @@ body {
    border-radius: 5px;
    cursor: pointer;
    transition: all ease 0.5s;
+}
+.genre-clear {
+   flex: 1 1 auto;
 }
 .genre:hover {
    background: #faab00;
@@ -97,6 +130,8 @@ body {
 }
 .movie img {
    width: 100%;
+   /*max-width: 300px;*/
+   height: 100%;
 }
 .movie__info {
    position: relative;
@@ -125,6 +160,7 @@ body {
    bottom: 0;
    transition: 1s ease;
    background-color: #373b69;
+   color: #ffff;
    max-height: 100%;
    transform: translateY(101%);
    z-index: 2;
@@ -132,4 +168,38 @@ body {
 }
 .movie:hover .movie__overview {
    transform: translateY(0)
+}
+@media (max-width: 710px) {
+   .movie {
+      flex: 0 1 45%;
+   }
+   .container {
+      padding: 0 20px;
+   }
+}
+@media (max-width: 610px) {
+   .movie {
+      flex: 0 1 43%;
+   }
+   .header-wrapper {
+      flex-wrap: wrap;
+      text-align: center;
+   }
+   .header-warpper__item {
+      width: 100%;
+   }
+}
+@media (max-width: 440px) {
+   .movie {
+      flex: 0 1 300px;
+      margin: 15px 0 0;
+   }
+}
+@media (max-width: 350px) {
+   .movie {
+      flex: 0 1 220px;
+   }
+   .search__input {
+      margin: 15px 0;
+   }
 }
